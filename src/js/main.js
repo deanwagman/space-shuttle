@@ -53,7 +53,7 @@ var player,
 var playerScore = 0;
 var highScore = 0;
 
-
+alert('Collect Stars. Avoid Meteors. Spacebar to change directions. You\'re our only hope; or something...');
 
 function preload() {
 
