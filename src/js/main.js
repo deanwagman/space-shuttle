@@ -57,13 +57,13 @@ var highScore = 0;
 
 function preload() {
 
-    game.load.image('space', './assets/bg.jpg');
-    game.load.image('ship', './assets/playerShip1_red.png');
-    game.load.image('platform', './assets/Parts/platform.png');
-    game.load.image('star', './assets/Power-ups/powerupGreen_star.png');
-    game.load.image('meteorMed', './assets/Meteors/meteorBrown_small1.png');
-    game.load.image('meteorGrey', './assets/Meteors/meteorGrey_small1.png');
-    game.load.audio('boden', ['./assets/8bit.mp3', 'assets/8bit.ogg']);
+    game.load.image('space', 'src/assets/bg.jpg');
+    game.load.image('ship', 'src/assets/playerShip1_red.png');
+    game.load.image('platform', 'src/assets/Parts/platform.png');
+    game.load.image('star', 'src/assets/Power-ups/powerupGreen_star.png');
+    game.load.image('meteorMed', 'src/assets/Meteors/meteorBrown_small1.png');
+    game.load.image('meteorGrey', 'src/assets/Meteors/meteorGrey_small1.png');
+    game.load.audio('boden', ['src/assets/8bit.mp3', 'assets/8bit.ogg']);
 	fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 	fireButton.onDown.add(changeDirection, this);
 }
