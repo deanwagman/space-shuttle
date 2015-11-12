@@ -1,7 +1,20 @@
 
 var game = new Phaser.Game(500, 750, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
-var player, keyboard, background, platforms, platform1, platform2, stars, meteors, scoreText, highScore, highScoreText, emitter, gameOverText;
+var player,
+	keyboard, 
+	background, 
+	platforms, 
+	platform1, 
+	platform2, 
+	stars, 
+	meteors, 
+	scoreText, 
+	highScore, 
+	highScoreText, 
+	emitter, 
+	gameOverText,
+	preload;
 
 var playerScore = 0;
 var highScore = 0;
@@ -16,13 +29,7 @@ function preload() {
     game.load.image('star', './assets/Power-ups/powerupGreen_star.png');
     game.load.image('meteorMed', './assets/Meteors/meteorBrown_small1.png');
     game.load.image('meteorGrey', './assets/Meteors/meteorGrey_small1.png');
-
-    // game.load.image('fire1', 'assets/fire1.png');
-    // game.load.image('fire2', 'assets/fire2.png');
-    // game.load.image('fire3', 'assets/fire3.png');
-
     game.load.audio('boden', ['./assets/8bit.mp3', 'assets/8bit.ogg']);
-
 	fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 	fireButton.onDown.add(changeDirection, this);
 }
@@ -143,15 +150,6 @@ function changeDirection() {
 	player.scale.y *= -1;
 	player.body.velocity.y = player.body.velocity.y * -1;
 }
-
-// I don't like this but no time
-// window.addEventListener('keyup', function(e) {
-// 	if (e.keyCode === 0 || e.keyCode === 32) {
-// 		changeDirection(player);
-// 	}
-// });
-// 
-
 
 function collideWithStar(player, star) {
 	// Create the star on the other side

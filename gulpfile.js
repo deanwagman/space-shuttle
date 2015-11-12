@@ -26,12 +26,12 @@ var config = {
   build : {
     path: '/'
   },
-  rsync: {
+  /* rsync: {
     previewURL: 'http://devfeud.prpl.rs',
     siteSSH: 'prpl@rack1.prpl.rs',
     sitePath: '/var/www/vhosts/devfeud/dean',
     siteExclude: []
-  }
+  } */
 };
 
 gulp.task('clean', function (cb) {
