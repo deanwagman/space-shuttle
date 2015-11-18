@@ -1,0 +1,6 @@
+body {
+	background: ghostwhite;
+}
+canvas {
+	box-shadow: 0em 10em 5em rgba(0, 0, 0, 0.3);
+}

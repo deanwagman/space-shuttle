@@ -1,105 +1,67 @@
-var gulp = require('gulp')
-  , gutil = require('gulp-util')
-  , del = require('del')
-  , concat = require('gulp-concat')
-  , rename = require('gulp-rename')
-  , minifycss = require('gulp-minify-css')
-  , minifyhtml = require('gulp-minify-html')
-  , processhtml = require('gulp-processhtml')
-  , jshint = require('gulp-jshint')
-  , uglify = require('gulp-uglify')
-  , connect = require('gulp-connect')
-  , rsync = require('rsyncwrapper').rsync
-  , paths;
+var gulp = require('gulp'),
+    gutil = require('gulp-util'),
+    del = require('del'),
+    concat = require('gulp-concat'),
+    rename = require('gulp-rename'),
+    minifycss = require('gulp-minify-css'),
+    jshint = require('gulp-jshint'),
+    uglify = require('gulp-uglify'),
+    connect = require('gulp-connect'),
+    paths;
 
 paths = {
+  src: 'src/**/*',
   assets: 'src/assets/**/*',
   css:    'src/css/*.css',
-  libs:   [
-    'src/bower_components/phaser-official/build/phaser.min.js'
-  ],
   js:     ['src/js/**/*.js'],
-  dist:   './dist/'
+  dist:   {
+    main: 'build',
+    css: 'build/css',
+    js: 'build/js',
+    assets: 'build/assets'
+  }
 };
 
-var config = {
-  build : {
-    path: '/'
-  },
-  /* rsync: {
-    previewURL: 'http://devfeud.prpl.rs',
-    siteSSH: 'prpl@rack1.prpl.rs',
-    sitePath: '/var/www/vhosts/devfeud/dean',
-    siteExclude: []
-  } */
-};
-
-gulp.task('clean', function (cb) {
-  del([paths.dist], cb);
+gulp.task('clean', function () {
+  del([paths.dist]);
+});
+gulp.task('clean-css', function () {
+  del([paths.dist.css]);
+});
+gulp.task('clean-js', function () {
+  del([paths.dist.js]);
+});
+gulp.task('clean-assets', function () {
+  del([paths.dist.assets]);
 });
 
-gulp.task('copy-assets', ['clean'], function () {
+gulp.task('copy-src', ['clean'], function () {
+  gulp.src(paths.src)
+    .pipe(gulp.dest(paths.dist.main))
+    .on('error', gutil.log);
+});
+
+gulp.task('copy-assets', ['clean-assets'], function () {
   gulp.src(paths.assets)
-    .pipe(gulp.dest(paths.dist + 'assets'))
+    .pipe(gulp.dest(paths.dist.assets))
     .on('error', gutil.log);
 });
 
-gulp.task('copy-vendor', ['clean'], function () {
-  gulp.src(paths.libs)
-    .pipe(gulp.dest(paths.dist))
-    .on('error', gutil.log);
-});
 
-gulp.task('uglify', ['clean','lint'], function () {
+gulp.task('uglify', ['clean-js'], function () {
   gulp.src(paths.js)
-    .pipe(concat('main.min.js'))
-    .pipe(gulp.dest(paths.dist))
+    .pipe(concat('main.js'))
     .pipe(uglify({outSourceMaps: false}))
-    .pipe(gulp.dest(paths.dist));
+    .pipe(gulp.dest(paths.dist.js));
 });
 
-gulp.task('deploy', [], function() {
-  rsync({
-      src: config.build.path,
-      dest: config.rsync.siteSSH + ':' + config.rsync.sitePath,
-      recursive: true,
-      ssh: true,
-      exclude: config.rsync.siteExclude,
-      args: ['--archive', '--compress', '--progress' ] // '--omit-dir-times', '--verbose', '--human-readable'
-  },function (error,stdout,stderr,cmd) {
-      console.log(stdout);
-      console.log(cmd);
-      if ( error ) {
-          console.log( error.message );
-      } else {
-          console.log( 'great job bro, successfully deployed!' );
-      }
-      if(stdout){ console.log(stdout); }
-  });
-});
-
-gulp.task('minifycss', ['clean'], function () {
+gulp.task('minifycss', ['clean-css'], function () {
  gulp.src(paths.css)
-    .pipe(minifycss({
-      keepSpecialComments: false,
-      removeEmpty: true
-    }))
-    .pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest(paths.dist))
-    .on('error', gutil.log);
-});
-
-gulp.task('processhtml', ['clean'], function() {
-  gulp.src('src/index.html')
-    .pipe(processhtml({}))
-    .pipe(gulp.dest(paths.dist))
-    .on('error', gutil.log);
-});
-
-gulp.task('minifyhtml', ['clean'], function() {
-  gulp.src('dist/index.html')
-    .pipe(minifyhtml())
-    .pipe(gulp.dest(paths.dist))
+    // .pipe(minifycss({
+    //   keepSpecialComments: false,
+    //   removeEmpty: true
+    // }))
+    .pipe(gulp.dest(paths.dist.css))
     .on('error', gutil.log);
 });
 
@@ -110,24 +72,18 @@ gulp.task('lint', function() {
     .on('error', gutil.log);
 });
 
-gulp.task('html', function(){
-  gulp.src('src/*.html')
-    .pipe(connect.reload())
-    .on('error', gutil.log);
-});
-
 gulp.task('connect', function () {
   connect.server({
-    root: [__dirname + '/src'],
+    root: [__dirname + '/'],
     port: 9000,
     livereload: true
   });
 });
 
 gulp.task('watch', function () {
-  gulp.watch(paths.js, ['lint']);
-  gulp.watch(['./src/index.html', paths.css, paths.js], ['html']);
+  gulp.watch(paths.js, ['lint', 'copy-src']);
+  gulp.watch(['./index.html', paths.css, paths.js]);
 });
 
-gulp.task('default', ['connect', 'watch']);
-gulp.task('build', ['copy-assets', 'copy-vendor', 'uglify', 'minifycss', 'processhtml', 'minifyhtml']);
+gulp.task('default', ['copy-src', 'connect', 'watch']);
+gulp.task('build', ['copy-assets', 'uglify', 'minifycss']);
